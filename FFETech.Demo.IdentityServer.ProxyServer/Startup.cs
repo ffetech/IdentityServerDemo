@@ -30,7 +30,7 @@ namespace FFETech.Demo.IdentityServer.ProxyServer
             app.UseWebSockets();
             app.UseProxies(proxies =>
             {
-                proxies.Map($"auth/{"{*endpoint}"}", proxy => proxy.UseHttp(
+                proxies.Map($"{GlobalConfig.IdentityServerId}/{"{*endpoint}"}", proxy => proxy.UseHttp(
                         (context, args) =>
                         {
                             var queryString = context.Request.QueryString;
@@ -44,7 +44,7 @@ namespace FFETech.Demo.IdentityServer.ProxyServer
                             })
                         );
 
-                proxies.Map($"blazor/{"{*endpoint}"}", proxy => proxy.UseHttp(
+                proxies.Map($"{GlobalConfig.BlazorClientId}/{"{*endpoint}"}", proxy => proxy.UseHttp(
                         (context, args) =>
                         {
                             var queryString = context.Request.QueryString;
@@ -58,7 +58,7 @@ namespace FFETech.Demo.IdentityServer.ProxyServer
                             })
                         );
 
-                proxies.Map($"razor/{"{*endpoint}"}", proxy => proxy.UseHttp(
+                proxies.Map($"{GlobalConfig.RazorClientId}/{"{*endpoint}"}", proxy => proxy.UseHttp(
                         (context, args) =>
                         {
                             var queryString = context.Request.QueryString;
