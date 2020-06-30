@@ -33,9 +33,9 @@ namespace FFETech.Demo.IdentityServer.Config
                     RequirePkce = true,
                     ClientSecrets = { new Secret(GlobalConfig.RazorClientSecret.Sha256()) },
 
-                    RedirectUris = { $"http://localhost:{GlobalConfig.RazorPort}/{GlobalConfig.RazorClientId}/signin-oidc" },
-                    FrontChannelLogoutUri = $"http://localhost:{GlobalConfig.RazorPort}/{GlobalConfig.RazorClientId}/signout-oidc",
-                    PostLogoutRedirectUris = { $"http://localhost:{GlobalConfig.RazorPort}/{GlobalConfig.RazorClientId}/signout-callback-oidc" },
+                    RedirectUris = { $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.RazorClientId}/signin-oidc" },
+                    FrontChannelLogoutUri = $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.RazorClientId}/signout-oidc",
+                    PostLogoutRedirectUris = { $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.RazorClientId}/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "api1" }
@@ -53,9 +53,9 @@ namespace FFETech.Demo.IdentityServer.Config
                     RequirePkce = true,
                     ClientSecrets = { new Secret(GlobalConfig.BlazorClientSecret.Sha256()) },
 
-                    RedirectUris = { $"http://localhost:{GlobalConfig.BlazorPort}/{GlobalConfig.BlazorClientId}/signin-oidc" },
-                    FrontChannelLogoutUri = $"http://localhost:{GlobalConfig.BlazorPort}/{GlobalConfig.BlazorClientId}/signout-oidc",
-                    PostLogoutRedirectUris = { $"http://localhost:{GlobalConfig.BlazorPort}/{GlobalConfig.BlazorClientId}/signout-callback-oidc" },
+                    RedirectUris = { $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.BlazorClientId}/signin-oidc" },
+                    FrontChannelLogoutUri = $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.BlazorClientId}/signout-oidc",
+                    PostLogoutRedirectUris = { $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.BlazorClientId}/signout-callback-oidc" },
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "api1" }

@@ -1,11 +1,10 @@
-using AspNetCore.Proxy;
-
+using System;
 using FFETech.Demo.IdentityServer.Config;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+
+using ProxyKit;
 
 namespace FFETech.Demo.IdentityServer.ProxyServer
 {
@@ -15,62 +14,48 @@ namespace FFETech.Demo.IdentityServer.ProxyServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddProxies();
+            services.AddProxy();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            app.UseDeveloperExceptionPage();
 
-            app.UseRouting();
+            //app.UseRouting();
 
             app.UseWebSockets();
-            app.UseProxies(proxies =>
+
+            app.UseWebSocketProxy(context =>
             {
-                proxies.Map($"{GlobalConfig.IdentityServerId}/{"{*endpoint}"}", proxy => proxy.UseHttp(
-                        (context, args) =>
-                        {
-                            var queryString = context.Request.QueryString;
-                            return $"http://localhost:{GlobalConfig.IdentityServerPort}/{GlobalConfig.IdentityServerId}/{args["endpoint"]}{queryString}";
-                        }, builder => builder.WithHttpClientName("proxyClient"))
-                        .UseWs(
-                            (context, args) =>
-                            {
-                                var queryString = context.Request.QueryString;
-                                return $"ws://localhost:{GlobalConfig.IdentityServerPort}/{GlobalConfig.IdentityServerId}/{args["endpoint"]}{queryString}";
-                            })
-                        );
+                string forward = "ws://localhost";
 
-                proxies.Map($"{GlobalConfig.BlazorClientId}/{"{*endpoint}"}", proxy => proxy.UseHttp(
-                        (context, args) =>
-                        {
-                            var queryString = context.Request.QueryString;
-                            return $"http://localhost:{GlobalConfig.BlazorPort}/{GlobalConfig.BlazorClientId}/{args["endpoint"]}{queryString}";
-                        }, builder => builder.WithHttpClientName("proxyClient"))
-                        .UseWs(
-                            (context, args) =>
-                            {
-                                var queryString = context.Request.QueryString;
-                                return $"ws://localhost:{GlobalConfig.BlazorPort}/{GlobalConfig.BlazorClientId}/{args["endpoint"]}{queryString}";
-                            })
-                        );
+                if (context.Request.Path.StartsWithSegments($"/{GlobalConfig.IdentityServerId}"))
+                    forward = $"ws://localhost:{GlobalConfig.IdentityServerPort}";
 
-                proxies.Map($"{GlobalConfig.RazorClientId}/{"{*endpoint}"}", proxy => proxy.UseHttp(
-                        (context, args) =>
-                        {
-                            var queryString = context.Request.QueryString;
-                            return $"http://localhost:{GlobalConfig.RazorPort}/{GlobalConfig.RazorClientId}/{args["endpoint"]}{queryString}";
-                        }, builder => builder.WithHttpClientName("proxyClient"))
-                        .UseWs(
-                            (context, args) =>
-                            {
-                                var queryString = context.Request.QueryString;
-                                return $"ws://localhost:{GlobalConfig.RazorPort}/{GlobalConfig.RazorClientId}/{args["endpoint"]}{queryString}";
-                            })
-                        );
+                if (context.Request.Path.StartsWithSegments($"/{GlobalConfig.RazorClientId}"))
+                    forward = $"ws://localhost:{GlobalConfig.RazorPort}";
+
+                if (context.Request.Path.StartsWithSegments($"/{GlobalConfig.BlazorClientId}"))
+                    forward = $"ws://localhost:{GlobalConfig.BlazorPort}";
+
+                return new Uri(forward);
+            },
+                options => options.AddXForwardedHeaders());
+
+            app.RunProxy(context =>
+            {
+                string forward = "http://localhost";
+
+                if (context.Request.Path.StartsWithSegments($"/{GlobalConfig.IdentityServerId}"))
+                    forward = $"http://localhost:{GlobalConfig.IdentityServerPort}";
+
+                if (context.Request.Path.StartsWithSegments($"/{GlobalConfig.RazorClientId}"))
+                    forward = $"http://localhost:{GlobalConfig.RazorPort}";
+
+                if (context.Request.Path.StartsWithSegments($"/{GlobalConfig.BlazorClientId}"))
+                    forward = $"http://localhost:{GlobalConfig.BlazorPort}";
+
+                return context.ForwardTo(forward).AddXForwardedHeaders().Send();
             });
         }
 

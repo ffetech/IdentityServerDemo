@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-
+using System.Threading.Tasks;
 using FFETech.Demo.IdentityServer.Config;
 
 using Microsoft.AspNetCore.Builder;
@@ -45,7 +45,7 @@ namespace FFETech.Demo.IdentityServer.RazorUI
                 .AddCookie("Cookies")
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = $"http://localhost:{GlobalConfig.IdentityServerPortForClient}/auth";
+                    options.Authority = $"http://localhost:{GlobalConfig.IdentityServerPortForClient}/{GlobalConfig.IdentityServerId}";
                     options.RequireHttpsMetadata = false;
 
                     options.ClientId = GlobalConfig.RazorClientId;
@@ -57,11 +57,11 @@ namespace FFETech.Demo.IdentityServer.RazorUI
 
                     options.SaveTokens = true;
 
-                    /*options.Events.OnRedirectToIdentityProvider = async n =>
+                    options.Events.OnRedirectToIdentityProvider = async n =>
                     {
-                        n.ProtocolMessage.RedirectUri = $"http://localhost:5003/signin-oidc";
+                        n.ProtocolMessage.RedirectUri = $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.RazorClientId}/signin-oidc";
                         await Task.FromResult(0);
-                    };*/
+                    };
                 });
 
             services.AddAuthorization();

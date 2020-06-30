@@ -32,7 +32,7 @@ namespace FFETech.Demo.IdentityServer.Pages.Account
 
         #region Public Methods
 
-        public async Task<IActionResult> OnGet(string returnUrl = "/")
+        public async Task<IActionResult> OnGet(string returnUrl = null)
         {
             return await OnPost(returnUrl);
         }
@@ -47,7 +47,7 @@ namespace FFETech.Demo.IdentityServer.Pages.Account
             }
             else
             {
-                return RedirectToPage();
+                return LocalRedirect(Request.PathBase.ToUriComponent());
             }
         }
 

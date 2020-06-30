@@ -8,7 +8,7 @@
         public const int ProxyPort = 5000;
         public const string IdentityServerId = "auth";
         public const int IdentityServerPort = 5001;
-        public const int IdentityServerPortForClient = IdentityServerPort; // switch here between ProxyPort and IdentityServerPort
+        public const int IdentityServerPortForClient = ProxyPort; // switch here between ProxyPort and IdentityServerPort
 
         public const string RazorClientId = "razor";
         public const string RazorClientSecret = "razor-secret";

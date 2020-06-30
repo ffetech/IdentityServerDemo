@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-
+using System.Threading.Tasks;
 using FFETech.Demo.IdentityServer.BlazorUI.Data;
 using FFETech.Demo.IdentityServer.Config;
 
@@ -57,11 +57,11 @@ namespace FFETech.Demo.IdentityServer.BlazorUI
 
                     options.SaveTokens = true;
 
-                    /*options.Events.OnRedirectToIdentityProvider = async n =>
+                    options.Events.OnRedirectToIdentityProvider = async n =>
                     {
-                        n.ProtocolMessage.RedirectUri = $"http://localhost:5003/{TlbProductDescriptor.PathBlazor}/signin-oidc";
+                        n.ProtocolMessage.RedirectUri = $"http://localhost:{GlobalConfig.ProxyPort}/{GlobalConfig.BlazorClientId}/signin-oidc";
                         await Task.FromResult(0);
-                    };*/
+                    };
                 });
 
             services.AddMvcCore(options =>
